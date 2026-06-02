@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlockCode ESP32/Arduino</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🧩 BlockCode ESP32/Arduino</h1>
+    <div class="actions">
+      <label class="server-input">
+        Servidor:
+        <input id="server-url" type="text" value="http://localhost:5000" />
+      </label>
+      <button id="btn-clear" title="Borrar todos los bloques">🗑 Limpiar</button>
+      <button id="btn-generate" title="Generar y enviar al servidor">⚡ Generar y compilar</button>
+      <button id="btn-upload" title="Compilar y subir al ESP32">⬆ Subir a placa</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PALETA -->
+    <aside id="palette">
+      <h2>Bloques</h2>
+
+      <div class="category">
+        <h3>Configuración</h3>
+        <div class="palette-block cat-setup" draggable="true" data-block="pinMode">pinMode(pin, modo)</div>
+        <div class="palette-block cat-setup" draggable="true" data-block="serialBegin">Serial.begin(baud)</div>
+      </div>
+
+      <div class="category">
+        <h3>Salida digital</h3>
+        <div class="palette-block cat-output" draggable="true" data-block="digitalHigh">Encender pin (HIGH)</div>
+        <div class="palette-block cat-output" draggable="true" data-block="digitalLow">Apagar pin (LOW)</div>
+        <div class="palette-block cat-output" draggable="true" data-block="analogWrite">PWM (analogWrite)</div>
+      </div>
+
+      <div class="category">
+        <h3>Entrada</h3>
+        <div class="palette-block cat-input" draggable="true" data-block="digitalRead">Leer pin → variable</div>
+      </div>
+
+      <div class="category">
+        <h3>Tiempo</h3>
+        <div class="palette-block cat-time" draggable="true" data-block="delay">Esperar (delay ms)</div>
+      </div>
+
+      <div class="category">
+        <h3>Control</h3>
+        <div class="palette-block cat-control" draggable="true" data-block="for">Repetir N veces (for)</div>
+        <div class="palette-block cat-control" draggable="true" data-block="if">Si (if condición)</div>
+      </div>
+
+      <div class="category">
+        <h3>Serial</h3>
+        <div class="palette-block cat-serial" draggable="true" data-block="serialPrint">Serial.println(texto)</div>
+      </div>
+
+      <p class="hint">Arrastra a la zona de la derecha. Los bloques de control aceptan otros bloques dentro.</p>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <section id="workspace">
+      <div class="workspace-section">
+        <h2><span class="dot dot-setup"></span> setup()</h2>
+        <div class="drop-zone" id="setup-zone" data-zone="setup"></div>
+      </div>
+      <div class="workspace-section">
+        <h2><span class="dot dot-loop"></span> loop()</h2>
+        <div class="drop-zone" id="loop-zone" data-zone="loop"></div>
+      </div>
+    </section>
+
+    <!-- PREVIEW -->
+    <section id="preview">
+      <h2>Código generado</h2>
+      <pre id="code-output"></pre>
+      <h2>Respuesta del servidor</h2>
+      <pre id="server-output">—</pre>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# ─── PlatformIO ───────────────────────────────────────────
+.pio/
+.pioenv/
+.piolibdeps/
+
+# ─── Python / Flask ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# ─── Variables de entorno ─────────────────────────────────
+.env
+.env.*
+
+# ─── Editores ─────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
