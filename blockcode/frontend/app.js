@@ -293,12 +293,19 @@ async function sendToServer(endpoint) {
   }
 }
 
-document.getElementById('btn-generate').addEventListener('click', () => sendToServer('/compile'));
-document.getElementById('btn-upload').addEventListener('click', () => {
-  if (confirm('Se compilará y se subirá al ESP32 conectado por USB. ¿Continuar?')) {
-    sendToServer('/upload');
-  }
-});
+const btnGenerate = document.getElementById('btn-generate');
+if (btnGenerate) {
+  btnGenerate.addEventListener('click', () => sendToServer('/compile'));
+}
+
+const btnUpload = document.getElementById('btn-upload');
+if (btnUpload) {
+  btnUpload.addEventListener('click', () => {
+    if (confirm('Se compilará y se subirá al ESP32 conectado por USB. ¿Continuar?')) {
+      sendToServer('/upload');
+    }
+  });
+}
 
 /* ---------- ESTADO INICIAL DE EJEMPLO (Blink) ---------- */
 function loadDemo() {

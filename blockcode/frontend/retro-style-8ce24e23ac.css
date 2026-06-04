@@ -1,0 +1,93 @@
+# ESP32 BUILDER
+
+## HARDWARE
+
+ ![LED](https://images.unsplash.com/photo-1572249930263-64fc5bbdb14b?w=200&h=200&fit=crop)
+
+ LED![Temp Sensor](https://images.unsplash.com/photo-1640955785023-1854685dae05?w=200&h=200&fit=crop)
+
+ TEMP SENSOR![Motion](https://images.unsplash.com/photo-1603732551658-5fabbafa84eb?w=200&h=200&fit=crop)
+
+ MOTION![OLED](https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=200&h=200&fit=crop)
+
+ OLED![Motor](https://images.unsplash.com/photo-1603732551681-2e91159b9dc2?w=200&h=200&fit=crop)
+ ...
+
+# ESP32 BUILDER
+...
+## HARDWARE
+ ...
+ MOTOR![Buzzer](https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?w=200&h=200&fit=crop)
+
+ BUZZER![Button](https://images.unsplash.com/photo-1577962144759-8dec6b55c952?w=200&h=200&fit=crop)
+
+ BUTTON![Resistor](https://images.unsplash.com/photo-1586920740199-47ce35183cfd?w=200&h=200&fit=crop)
+
+ RESISTOR [Image: Image]
+ ...
+
+# ESP32 BUILDER
+...
+## CONSTRUCTION CANVAS
+
+ 1 module[Image: Image]
+
+CLEAR COMPONENTS      ESP32 WROOM-32 DevKit V1    EN   VP (ADC)   VN (ADC)   IO34   IO35   IO32   IO33   IO25   IO26   IO27   IO14   IO12   GND   IO13   D2    D3   CMD   5V   GND   IO23   IO22   TX0   RX0   IO21 (SDA)   GND   IO19 (MISO)   IO18   IO5   IO17   IO16 
+## BEHAVIORS
+
+ [Image: Image]
+
+ TURN ON[Image: Image]
+
+ TURN OFF[Image: Image]
+
+ READ SENSOR[Image: Image]
+
+ NOTIFY[Image: Image]
+
+ TIMER[Image: Image]
+
+ BLINK[Image: Image]
+
+ IF/THEN[Image: Image]
+
+ CONFIGURE [Image: Image]
+
+
+ ...
+
+# ESP32 BUILDER
+...
+## AUTO-GENERATED CODE
+
+ C++ / Arduino[Image: Image]
+
+COPY[Image: Image]
+
+...
+# ESP32 BUILDER
+
+[Image: Image]
+
+RUN[Image: Image]
+
+SIMULATE[Image: Image]
+
+SAVE[Image: Image]
+
+EXPORT[Image: Image]
+
+LOAD
+## HARDWARE
+ ...
+## CONSTRUCTION CANVAS
+...
+## BEHAVIORS
+ ...
+## AUTO-GENERATED CODE
+...
+  [Image: Image]
+
+
+# ESP32 BUILDER
+...
