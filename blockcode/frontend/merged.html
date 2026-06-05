@@ -3,26 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlockCode ESP32/Arduino</title>
+  <title>BlockCode — Merged Editor + Canvas</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="merged-style.css" />
 </head>
 <body>
   <header>
-    <h1>🧩 BlockCode ESP32/Arduino</h1>
+    <h1>🧩 BlockCode — Editor & Construction Canvas</h1>
     <div class="actions">
       <label class="server-input">
         Servidor:
         <input id="server-url" type="text" value="http://localhost:5000" />
       </label>
       <button id="btn-clear" title="Borrar todos los bloques">🗑 Limpiar</button>
-      <button id="btn-generate" title="Generar y enviar al servidor">⚡ Generar y compilar</button>
       <button id="btn-upload" title="Compilar y subir al ESP32">⬆ Subir a placa</button>
+      <button id="btn-save" title="Guardar .cpp">💾 Guardar .cpp</button>
     </div>
   </header>
 
-  <main>
-    <!-- PALETA -->
-    <aside id="palette">
+  <div id="file-warning" class="file-warning" hidden>
+    Esta página se está abriendo con <strong>file://</strong>. Para evitar avisos de seguridad y permitir todas las funciones, ábrela desde <strong>http://localhost</strong> usando un servidor local.
+  </div>
+
+  <main class="merged-main">
+    <section id="palette">
       <h2>Bloques</h2>
 
       <div class="category">
@@ -59,10 +63,9 @@
         <div class="palette-block cat-serial" draggable="true" data-block="serialPrint">Serial.println(texto)</div>
       </div>
 
-      <p class="hint">Arrastra a la zona de la derecha. Los bloques de control aceptan otros bloques dentro.</p>
-    </aside>
+      <p class="hint">Arrastra a la zona central o derecha. Los bloques de control aceptan otros bloques dentro.</p>
+    </section>
 
-    <!-- WORKSPACE -->
     <section id="workspace">
       <div class="workspace-section">
         <h2><span class="dot dot-setup"></span> setup()</h2>
@@ -74,15 +77,39 @@
       </div>
     </section>
 
-    <!-- PREVIEW -->
-    <section id="preview">
-      <h2>Código generado</h2>
-      <pre id="code-output"></pre>
-      <h2>Respuesta del servidor</h2>
-      <pre id="server-output">—</pre>
+    <!-- CENTER: CONSTRUCTION CANVAS -->
+    <section id="canvas-area">
+      <h2>Construction Canvas</h2>
+      <div id="canvas">
+        <div id="device-visual" aria-hidden="false">
+          <div class="canvas-stage">
+            <div class="pin-rail pin-rail-left" id="pin-list-left"></div>
+
+            <div class="esp-board">
+              <div class="esp-board-top"></div>
+              <div class="esp-board-body">
+                <div class="esp-chip">
+                  <span class="esp-chip-title">ESP32</span>
+                  <span class="esp-chip-subtitle">WROOM-32</span>
+                </div>
+                <div class="esp-chip-foot"></div>
+                <div class="esp-board-label">DevKit V1</div>
+              </div>
+            </div>
+
+            <div class="pin-rail pin-rail-right" id="pin-list-right"></div>
+          </div>
+        </div>
+        <div id="components-layer"></div>
+      </div>
     </section>
   </main>
 
+  <!-- Hidden preview elements kept for compatibility with app.js -->
+  <pre id="code-output" style="display:none"></pre>
+  <pre id="server-output" style="display:none">—</pre>
+
   <script src="app.js"></script>
+  <script src="merged.js"></script>
 </body>
 </html>

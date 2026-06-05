@@ -1,0 +1,346 @@
+/* merged-style.css — layout and retro canvas styling for merged editor */
+:root{
+  --bg:#0c1118;
+  --panel:#111827;
+  --panel-2:#0f1726;
+  --muted:#9aa6b2;
+  --text:#e8eef6;
+  --accent:#3ab7ff;
+  --amber:#e2aa57;
+  --chip:#1b1b1b;
+  --board:#295ca1;
+  --board-edge:#2f4f7a;
+  --board-scale: 1;
+  --pin-rail-width: 140px;
+  --pin-rail-offset: 74px;
+  --pin-rail-gap: 12px;
+  --pin-row-gap: 8px;
+  --pin-row-min-height: 22px;
+  --pin-label-width: 92px;
+  --pin-button-width: 54px;
+  --pin-button-height: 23px;
+  --pin-button-radius: 5px;
+  --pin-font-size: 0.84rem;
+}
+
+html, body{height:100%;}
+html{overflow:hidden;} /* prevent a page-level scrollbar; each panel scrolls itself */
+body{
+  background:
+    radial-gradient(circle at 20% 15%, rgba(58,183,255,.08), transparent 24%),
+    radial-gradient(circle at 80% 15%, rgba(226,170,87,.07), transparent 22%),
+    linear-gradient(180deg,#0a0f15 0%, #11151b 100%);
+  color:var(--text);
+}
+
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  background:linear-gradient(90deg,#081019,#0d1824 50%, #08131f);
+  border-bottom:1px solid rgba(255,255,255,0.05)
+}
+
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+#file-warning{
+  margin:12px 16px 0;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,200,90,0.25);
+  background:rgba(226,170,87,0.12);
+  color:#f6e7c6;
+}
+
+.merged-main{
+  display:grid;
+  /* palette | workspace | canvas */
+  grid-template-columns: 260px 360px 1fr;
+  gap:14px;
+  padding:16px;
+  min-height:0;
+  flex:1;
+}
+
+#palette,
+#workspace,
+#canvas-area{
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 8px 26px rgba(0,0,0,0.22);
+  border-radius:14px;
+}
+
+#palette,
+#workspace{
+  padding:12px;
+  overflow:auto;
+  min-height:0;
+  min-width:0; /* allow column to shrink below content width */
+}
+
+#workspace{display:flex;flex-direction:column;gap:10px}
+
+#palette,
+#workspace,
+#canvas-area{
+  height: calc(100vh - 92px);
+  min-width:0;
+}
+
+.workspace-section{margin-bottom:10px}
+.workspace-section:last-child{margin-bottom:0}
+
+.drop-zone{
+  min-height:140px;
+  border:1px dashed rgba(255,255,255,0.12);
+  padding:10px;
+  border-radius:10px;
+  background:rgba(8,12,20,0.45);
+}
+
+#canvas-area{
+  padding:12px;
+  overflow:hidden;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+
+#canvas{
+  position:relative;
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(53,100,160,0.28), rgba(0,0,0,0) 60%),
+    #101015;
+  background-size:34px 34px, 34px 34px, auto, auto;
+  padding:18px;
+}
+
+.canvas-hint{
+  position:sticky;
+  top:0;
+  z-index:2;
+  margin:0 0 14px;
+  padding:8px 10px;
+  width:max-content;
+  max-width:100%;
+  border-radius:999px;
+  background:rgba(0,0,0,0.4);
+  color:var(--muted);
+  backdrop-filter:blur(6px);
+}
+
+#device-visual{
+  min-height:760px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.canvas-stage{
+  position:relative;
+  width:100%;
+  max-width:1100px;
+  /* JS sets --board-height so pin-rail top:50% centers on the board */
+  height: var(--board-height, 760px);
+  margin:0 auto;
+}
+
+.pin-rail{
+  position:absolute;
+  /* center vertically on the stage (JS sets --board-height so stage = max(board,pins)) */
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:var(--pin-rail-gap);
+  /* no fixed height — let content define it so flex overflow doesn't shift the center */
+  width:var(--pin-rail-width);
+  padding:6px 8px;
+  box-sizing:border-box;
+  z-index:5;
+}
+
+/* --board-half-px is the board's measured half-width in px, set by JS */
+.pin-rail-left{left:calc(50% - var(--board-half-px, 260px) - var(--pin-rail-offset)); align-items:flex-end;}
+.pin-rail-right{right:calc(50% - var(--board-half-px, 260px) - var(--pin-rail-offset)); align-items:flex-start;}
+
+.pin-row{
+  display:flex;
+  align-items:center;
+  gap:var(--pin-row-gap);
+  min-height:var(--pin-row-min-height);
+  color:rgba(230,236,244,0.64);
+  font-size:var(--pin-font-size);
+  letter-spacing:0.02em;
+}
+
+/* layout tweaks per side — both use flex-start so buttons sit against the board edge */
+.pin-row.pin-row-left{justify-content:flex-start;}
+.pin-row.pin-row-right{justify-content:flex-start;}
+
+.pin-label{width:var(--pin-label-width); text-align:right; opacity:0.95}
+.pin-rail-right .pin-label{order:2; text-align:left; width:var(--pin-label-width); opacity:0.95}
+
+.pin-button{
+  width:var(--pin-button-width);
+  height:var(--pin-button-height);
+  border-radius:var(--pin-button-radius);
+  border:1px solid rgba(255,255,255,0.10);
+  background:#303036;
+  color:var(--text);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:var(--pin-font-size);
+  cursor:pointer;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.05), 0 2px 4px rgba(0,0,0,0.35);
+}
+.pin-button.active{background:#19c2ff; box-shadow:0 0 0 1px rgba(25,194,255,0.35), 0 0 16px rgba(25,194,255,0.55)}
+
+.esp-board{
+  position:absolute;
+  left:50%;
+  top:var(--board-top, 0px);
+  transform:translateX(-50%);
+  /* Fixed CSS percentage — no --board-scale here to avoid circular dependency with JS */
+  width:56%;
+  min-height:490px;
+  max-width:520px;
+  aspect-ratio: 12 / 22; /* keeps board proportions */
+  border-radius:10px 10px 12px 12px;
+  background:linear-gradient(180deg, #3569aa 0%, #315d98 40%, #2b5a95 100%);
+  border:1px solid var(--board-edge);
+  box-shadow:
+    0 0 0 2px rgba(20,30,45,0.42) inset,
+    0 10px 30px rgba(0,0,0,0.38),
+    0 0 0 1px rgba(255,255,255,0.05);
+  overflow:visible;
+}
+
+.esp-board-top{
+  position:absolute;
+  left:4%;
+  right:4%;
+  top:0;
+  height:12%;
+  border-radius:8px 8px 0 0;
+  background:rgba(255,255,255,0.04);
+}
+
+.esp-board-body{
+  position:absolute;
+  top:14%;
+  left:0;
+  right:0;
+  bottom:0;
+}
+
+.esp-chip{
+  position:absolute;
+  left:50%;
+  top:20%;
+  transform:translateX(-50%);
+  width:28%;
+  height:22%;
+  min-width:96px;
+  min-height:64px;
+  border-radius:4px;
+  background:var(--chip);
+  box-shadow:0 0 0 2px rgba(255,255,255,0.04) inset, 0 8px 18px rgba(0,0,0,0.45);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.esp-chip-title{
+  color:#ffd342;
+  font-size:1.4rem;
+  font-weight:700;
+  letter-spacing:0.03em;
+}
+
+.esp-chip-subtitle{
+  color:#95a0ab;
+  font-size:0.86rem;
+  margin-top:2px;
+}
+
+.esp-chip-foot{
+  position:absolute;
+  left:50%;
+  top:44%;
+  transform:translateX(-50%);
+  width:14%;
+  height:5%;
+  min-width:48px;
+  min-height:20px;
+  border-radius:6px;
+  background:#353535;
+  box-shadow:0 0 0 2px rgba(255,255,255,0.04) inset;
+}
+
+.esp-board-label{
+  position:absolute;
+  left:50%;
+  bottom:6%;
+  transform:translateX(-50%);
+  color:#c9d3de;
+  font-size:0.95rem;
+  letter-spacing:0.12em;
+}
+
+#components-layer{position:relative}
+
+/* Hide preview elements (kept for scripts) */
+#code-output,
+#server-output{display:none}
+
+/* Keep palette buttons readable on the darker theme */
+.palette-block{background:rgba(255,255,255,0.06);padding:8px;border-radius:8px;margin:6px 0;cursor:grab}
+.palette-block:active{cursor:grabbing}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+/* Use * so every scrollable container is covered (body, panels, canvas, etc.) */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(58,183,255,0.35) transparent;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(58,183,255,0.35);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(58,183,255,0.6);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@media (max-width: 900px){
+  .merged-main{grid-template-columns:1fr;}
+  #device-visual{min-width:640px;}
+}
