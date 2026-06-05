@@ -24,6 +24,7 @@
 }
 
 html, body{height:100%;}
+html{overflow:hidden;} /* prevent a page-level scrollbar; each panel scrolls itself */
 body{
   background:
     radial-gradient(circle at 20% 15%, rgba(58,183,255,.08), transparent 24%),
@@ -306,6 +307,38 @@ header{
 /* Keep palette buttons readable on the darker theme */
 .palette-block{background:rgba(255,255,255,0.06);padding:8px;border-radius:8px;margin:6px 0;cursor:grab}
 .palette-block:active{cursor:grabbing}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+/* Use * so every scrollable container is covered (body, panels, canvas, etc.) */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(58,183,255,0.35) transparent;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(58,183,255,0.35);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(58,183,255,0.6);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 @media (max-width: 900px){
   .merged-main{grid-template-columns:1fr;}

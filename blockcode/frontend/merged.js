@@ -45,15 +45,15 @@
     const left = document.getElementById('pin-list-left');
     const right = document.getElementById('pin-list-right');
     if (!left || !right) return;
-    const leftPins = ['EN', 'VP (ADC)', 'VN (ADC)', 'IO34', 'IO35', 'IO32', 'IO33', 'IO25', 'IO26', 'IO27', 'IO14', 'IO12', 'GND', 'IO13', 'D2'];
-    const rightPins = ['D3', 'CMD', '5V', 'GND', 'IO23', 'IO22', 'TX0', 'RX0', 'IO21 (SDA)', 'GND', 'IO19 (MISO)', 'IO18', 'IO5', 'IO17', 'IO16'];
+    const leftPins = ['EN', 'VP (ADC)', 'VN (ADC)', 'IO34', 'IO35', 'IO32', 'IO33', 'IO25', 'IO26', 'IO27', 'IO14', 'IO12','IO13', 'GND', 'VIN'];
+    const rightPins = ['IO23', 'IO22', 'TX0', 'RX0', 'IO21', 'IO19', 'IO18', 'IO5', 'TX2', 'RX2', 'IO4', 'IO2', 'IO15', 'GND', '3V3'];
 
     left.innerHTML = leftPins.map((label) => makePinRow(label, 'left')).join('');
     right.innerHTML = rightPins.map((label) => makePinRow(label, 'right')).join('');
   }
 
   function makePinRow(label, side) {
-    const active = /^IO(23|22|21|19|18|5|17|16)$/.test(label) ? ' active' : '';
+    const active = /^IO()$/.test(label) ? ' active' : '';
     const pinLabel = `<span class="pin-label">${label}</span>`;
     const pinButton = `<button type="button" class="pin-button${active}" aria-label="${label}"></button>`;
     // Left rail: label outside (left), button inside (right, touching board)
