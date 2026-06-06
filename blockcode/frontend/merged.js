@@ -25,20 +25,18 @@
 
   function downloadCpp() {
     if (typeof generateCode !== 'function') {
-      alert('La función generateCode() no está disponible. Asegúrate de que app.js esté cargado.');
+      alert('generateCode() no está disponible. Verifica que app.js esté cargado.');
       return;
     }
     const code = generateCode();
+    const name = `blockcode_${new Date().toISOString().replace(/[:.]/g, '-')}.cpp`;
     const blob = new Blob([code], { type: 'text/x-c' });
-    const name = `blockcode_${new Date().toISOString().replace(/[:.]/g,'-')}.cpp`;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
+    showStatus(`✓ Archivo descargado: ${name}`);
   }
 
   function renderPinList() {
