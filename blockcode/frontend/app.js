@@ -40,8 +40,8 @@ const BLOCK_DEFS = {
   analogWrite: {
     label: 'PWM analogWrite',
     params: [
-      { name: 'pin',   type: 'number', default: 5 },
-      { name: 'value', type: 'number', default: 128 }
+      { name: 'pin',   type: 'number', default: 2 },
+      { name: 'value', type: 'text',   default: '128' }
     ],
     generate: (p) => `analogWrite(${p.pin}, ${p.value});`
   },
@@ -52,6 +52,26 @@ const BLOCK_DEFS = {
       { name: 'var', type: 'text',   default: 'estado' }
     ],
     generate: (p) => `int ${p.var} = digitalRead(${p.pin});`
+  },
+  analogRead: {
+    label: 'Leer pin analógico',
+    params: [
+      { name: 'pin', type: 'number', default: 34 },
+      { name: 'var', type: 'text',   default: 'potValue' }
+    ],
+    generate: (p) => `int ${p.var} = analogRead(${p.pin});`
+  },
+  mapValue: {
+    label: 'Mapear valor (map)',
+    params: [
+      { name: 'src',      type: 'text',   default: 'potValue' },
+      { name: 'fromLow',  type: 'number', default: 0 },
+      { name: 'fromHigh', type: 'number', default: 4095 },
+      { name: 'toLow',    type: 'number', default: 0 },
+      { name: 'toHigh',   type: 'number', default: 255 },
+      { name: 'dst',      type: 'text',   default: 'brightness' }
+    ],
+    generate: (p) => `int ${p.dst} = map(${p.src}, ${p.fromLow}, ${p.fromHigh}, ${p.toLow}, ${p.toHigh});`
   },
   delay: {
     label: 'Esperar (delay)',
@@ -76,9 +96,13 @@ const BLOCK_DEFS = {
   },
   serialPrint: {
     label: 'Serial.println',
-    params: [{ name: 'text', type: 'text', default: 'Hola ESP32' }],
-    // Escapamos comillas dobles dentro del texto del usuario
-    generate: (p) => `Serial.println("${String(p.text).replace(/"/g, '\\"')}");`
+    params: [
+      { name: 'text', type: 'text',   default: 'Hola ESP32' },
+      { name: 'tipo', type: 'select', options: ['texto', 'variable'], default: 'texto' }
+    ],
+    generate: (p) => p.tipo === 'variable'
+      ? `Serial.println(${p.text});`
+      : `Serial.println("${String(p.text).replace(/"/g, '\\"')}");`
   }
 };
 
@@ -267,6 +291,11 @@ document.getElementById('btn-clear').addEventListener('click', () => {
   updatePreview();
 });
 
+function showStatus(text) {
+  const out = document.getElementById('server-output');
+  if (out) out.textContent = text;
+}
+
 async function sendToServer(endpoint) {
   const serverUrl = document.getElementById('server-url').value.trim().replace(/\/$/, '');
   const payload = {
@@ -276,8 +305,7 @@ async function sendToServer(endpoint) {
       loop:  serializeBlocks(document.getElementById('loop-zone'))
     }
   };
-  const out = document.getElementById('server-output');
-  out.textContent = `→ POST ${serverUrl}${endpoint}\nEnviando...`;
+  showStatus(`→ POST ${serverUrl}${endpoint}\nEnviando...`);
   try {
     const res = await fetch(`${serverUrl}${endpoint}`, {
       method: 'POST',
@@ -287,18 +315,47 @@ async function sendToServer(endpoint) {
     const text = await res.text();
     let pretty = text;
     try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch (_) {}
-    out.textContent = `← HTTP ${res.status}\n\n${pretty}`;
+    showStatus(`← HTTP ${res.status}\n\n${pretty}`);
+    return { ok: res.ok, text, data: JSON.parse(text) };
   } catch (err) {
-    out.textContent = `✗ Error de red: ${err.message}\n\n¿Está corriendo Flask? ¿CORS habilitado?`;
+    showStatus(`✗ Error de red: ${err.message}\n\n¿Está corriendo Flask? ¿CORS habilitado?`);
+    return { ok: false };
   }
 }
 
-document.getElementById('btn-generate').addEventListener('click', () => sendToServer('/compile'));
-document.getElementById('btn-upload').addEventListener('click', () => {
-  if (confirm('Se compilará y se subirá al ESP32 conectado por USB. ¿Continuar?')) {
-    sendToServer('/upload');
+async function sendToESP32(endpoint) {
+  const esp32Url = document.getElementById('esp32-url').value.trim().replace(/\/$/, '');
+  // Send only blocks — skip the generated C++ string to save ESP32 memory.
+  const payload = {
+    blocks: {
+      setup: serializeBlocks(document.getElementById('setup-zone')),
+      loop:  serializeBlocks(document.getElementById('loop-zone'))
+    }
+  };
+  showStatus(`→ POST ${esp32Url}${endpoint}\nEnviando programa al ESP32...`);
+  try {
+    const res = await fetch(`${esp32Url}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const text = await res.text();
+    let pretty = text;
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch (_) {}
+    showStatus(`← HTTP ${res.status}\n\n${pretty}`);
+  } catch (err) {
+    showStatus(`✗ Error de red: ${err.message}\n\n¿Está encendido el ESP32 y conectado al WiFi?`);
   }
-});
+}
+
+const btnUpload = document.getElementById('btn-upload');
+if (btnUpload) {
+  btnUpload.addEventListener('click', () => {
+    if (confirm('El programa se enviará al ESP32 vía WiFi y comenzará a ejecutarse de inmediato. ¿Continuar?')) {
+      sendToESP32('/program');
+    }
+  });
+}
 
 /* ---------- ESTADO INICIAL DE EJEMPLO (Blink) ---------- */
 function loadDemo() {
@@ -306,10 +363,11 @@ function loadDemo() {
   const loopZone  = document.getElementById('loop-zone');
   setupZone.appendChild(createBlockElement('serialBegin', { baud: 115200 }));
   setupZone.appendChild(createBlockElement('pinMode',     { pin: 2, mode: 'OUTPUT' }));
-  loopZone.appendChild(createBlockElement('digitalHigh', { pin: 2 }));
-  loopZone.appendChild(createBlockElement('delay',       { ms: 500 }));
-  loopZone.appendChild(createBlockElement('digitalLow',  { pin: 2 }));
-  loopZone.appendChild(createBlockElement('delay',       { ms: 500 }));
+  loopZone.appendChild(createBlockElement('analogRead',   { pin: 34, var: 'potValue' }));
+  loopZone.appendChild(createBlockElement('mapValue',     { src: 'potValue', fromLow: 0, fromHigh: 4095, toLow: 0, toHigh: 255, dst: 'brightness' }));
+  loopZone.appendChild(createBlockElement('analogWrite',  { pin: 2, value: 'brightness' }));
+  loopZone.appendChild(createBlockElement('serialPrint',  { text: 'potValue', tipo: 'variable' }));
+  loopZone.appendChild(createBlockElement('delay',        { ms: 10 }));
   updatePreview();
 }
 loadDemo();

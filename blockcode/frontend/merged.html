@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlockCode — Merged Editor + Canvas</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="merged-style.css" />
+</head>
+<body>
+  <header>
+    <h1>Editor & Construction Canvas</h1>
+    <div class="actions">
+      <label class="server-input">
+        Flask:
+        <input id="server-url" type="text" value="http://localhost:5000" />
+      </label>
+      <label class="server-input">
+        ESP32:
+        <input id="esp32-url" type="text" value="http://rt-esp32.local" />
+      </label>
+      <button id="btn-clear"  title="Borrar todos los bloques">🗑 Limpiar</button>
+      <button id="btn-upload" title="Enviar programa al ESP32 vía WiFi">⬆ Subir a placa</button>
+      <button id="btn-save"   title="Compilar y descargar .cpp">💾 Guardar .cpp</button>
+    </div>
+  </header>
+
+  <div id="file-warning" class="file-warning" hidden>
+    Esta página se está abriendo con <strong>file://</strong>. Para evitar avisos de seguridad y permitir todas las funciones, ábrela desde <strong>http://localhost</strong> usando un servidor local.
+  </div>
+
+  <main class="merged-main">
+    <section id="palette">
+      <h2>Bloques</h2>
+
+      <div class="category">
+        <h3>Configuración</h3>
+        <div class="palette-block cat-setup" draggable="true" data-block="pinMode">pinMode(pin, modo)</div>
+        <div class="palette-block cat-setup" draggable="true" data-block="serialBegin">Serial.begin(baud)</div>
+      </div>
+
+      <div class="category">
+        <h3>Salida digital</h3>
+        <div class="palette-block cat-output" draggable="true" data-block="digitalHigh">Encender pin (HIGH)</div>
+        <div class="palette-block cat-output" draggable="true" data-block="digitalLow">Apagar pin (LOW)</div>
+        <div class="palette-block cat-output" draggable="true" data-block="analogWrite">PWM (analogWrite)</div>
+      </div>
+
+      <div class="category">
+        <h3>Entrada</h3>
+        <div class="palette-block cat-input" draggable="true" data-block="digitalRead">Leer pin digital → var</div>
+        <div class="palette-block cat-input" draggable="true" data-block="analogRead">Leer pin analógico → var</div>
+        <div class="palette-block cat-input" draggable="true" data-block="mapValue">Mapear valor (map)</div>
+      </div>
+
+      <div class="category">
+        <h3>Tiempo</h3>
+        <div class="palette-block cat-time" draggable="true" data-block="delay">Esperar (delay ms)</div>
+      </div>
+
+      <div class="category">
+        <h3>Control</h3>
+        <div class="palette-block cat-control" draggable="true" data-block="for">Repetir N veces (for)</div>
+        <div class="palette-block cat-control" draggable="true" data-block="if">Si (if condición)</div>
+      </div>
+
+      <div class="category">
+        <h3>Serial</h3>
+        <div class="palette-block cat-serial" draggable="true" data-block="serialPrint">Serial.println(texto)</div>
+      </div>
+
+      <p class="hint">Arrastra a la zona central o derecha. Los bloques de control aceptan otros bloques dentro.</p>
+    </section>
+
+    <section id="workspace">
+      <div class="workspace-section">
+        <h2><span class="dot dot-setup"></span> setup()</h2>
+        <div class="drop-zone" id="setup-zone" data-zone="setup"></div>
+      </div>
+      <div class="workspace-section">
+        <h2><span class="dot dot-loop"></span> loop()</h2>
+        <div class="drop-zone" id="loop-zone" data-zone="loop"></div>
+      </div>
+    </section>
+
+    <!-- CENTER: CONSTRUCTION CANVAS -->
+    <section id="canvas-area">
+      <h2>Construction Canvas</h2>
+      <div id="canvas">
+        <div id="device-visual" aria-hidden="false">
+          <div class="canvas-stage">
+            <div class="pin-rail pin-rail-left" id="pin-list-left"></div>
+
+            <div class="esp-board">
+              <div class="esp-board-top"></div>
+              <div class="esp-board-body">
+                <div class="esp-chip">
+                  <span class="esp-chip-title">ESP32</span>
+                  <span class="esp-chip-subtitle">WROOM-32</span>
+                </div>
+                <div class="esp-chip-foot"></div>
+                <div class="esp-board-label">DevKit V1</div>
+              </div>
+            </div>
+
+            <div class="pin-rail pin-rail-right" id="pin-list-right"></div>
+          </div>
+        </div>
+        <div id="components-layer"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Status bar: shows feedback from ESP32 and Flask calls -->
+  <pre id="server-output" style="margin:0;padding:8px 16px;background:#1e1e1e;color:#d4d4d4;font-size:0.78rem;min-height:2.4em;white-space:pre-wrap;border-top:1px solid #333">—</pre>
+
+  <!-- Hidden code preview kept for compatibility with app.js -->
+  <pre id="code-output" style="display:none"></pre>
+
+  <script src="app.js"></script>
+  <script src="merged.js"></script>
+</body>
+</html>
